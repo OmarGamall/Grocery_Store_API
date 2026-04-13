@@ -2,7 +2,7 @@
 
 # 1. Load variables from .env file
 if [ -f .env ]; then
-    export $(cat .env | xargs)
+    export $(grep -v '^#' .env | xargs -d '\n')
 else
     echo "ERROR: .env file not found. Please create one based on .env.example"
     exit 1
