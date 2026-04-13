@@ -23,7 +23,6 @@ This project provides a robust automation layer for the Simple Grocery Store ser
 ---
 
 ## Repository Structure
-* `.github/workflows/`: Automation for GitHub Actions (Contract Test Reports).
 * `Simple Grocery Store.postman_collection.json`: The core test suite.
 * `Simple Grocery Env.postman_environment.json`: Environment variables and configuration.
 * `run_api.sh`: A shell script to execute the full suite and generate reports.
@@ -47,17 +46,28 @@ The collection is organized into logical folders mirroring the API's domain:
 
 ---
 
-## Getting Started
+Getting Started & Setup
 
-### Prerequisites
-* [Node.js](https://nodejs.org/) (v16+)
-* Newman and HTML Extra Reporter:
+### 1. Prerequisites
+* [Node.js](https://nodejs.org/) installed.
+* Install Newman and the HTML reporter globally:
     ```bash
     npm install -g newman newman-reporter-htmlextra
     ```
 
-### Execution
-Run the full suite and generate a report using the provided shell script:
+### 2. Configuration (Security Setup)
+To protect sensitive data, this project uses environment variables.
+1.  Copy the `.env.example` file and rename it to `.env`.
+2.  Open `.env` and enter your Postman details:
+    ```bash
+    POSTMAN_API_KEY=your_key_here
+    POSTMAN_COLLECTION_ID=your_collection_uid
+    POSTMAN_ENV_ID=your_environment_uid
+    ```
+*Note: The `.env` file is ignored by Git to keep your keys private.*
+
+### 3. Execution
+Run the full suite and generate a report using the automated bash script:
 ```bash
 chmod +x run_api.sh
 ./run_api.sh
