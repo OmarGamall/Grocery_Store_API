@@ -71,6 +71,7 @@ Run the full suite and generate a report using the automated bash script:
 ```bash
 chmod +x run_api.sh
 ./run_api.sh
+```
 
 
 
