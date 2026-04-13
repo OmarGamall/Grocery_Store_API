@@ -1,0 +1,6 @@
+# Ignore sensitive keys
+.env
+
+# Ignore local reports
+*.html
+newman/
