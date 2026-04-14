@@ -2,5 +2,6 @@
 .env
 
 # Ignore local reports
+reports/
 *.html
 newman/
