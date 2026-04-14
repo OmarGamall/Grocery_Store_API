@@ -1,59 +1,72 @@
 #!/bin/bash
 
-# 1. Load variables from .env file
+# 1. Load variables from .env
 if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs -d '\n')
+    while IFS='=' read -r key value || [ -n "$key" ]; do
+        # 1a. Cleanup: Remove leading/trailing whitespace from key and value
+        key=$(echo "$key" | xargs)
+        value=$(echo "$value" | xargs | sed 's/\r$//')
+        
+        # 1b. Skip comments and empty keys
+        [[ $key =~ ^#.* ]] || [[ -z $key ]] && continue
+        
+        # 1c. Dynamically export the variable
+        export "$key=$value"
+    done < .env
 else
-    echo "ERROR: .env file not found. Please create one based on .env.example"
+    echo "❌ ERROR: .env file not found."
     exit 1
 fi
 
-# 2. Configuration
-API_KEY="$POSTMAN_API_KEY"
-COLLECTION_ID="$POSTMAN_COLLECTION_ID"
-ENV_ID="$POSTMAN_ENV_ID"
+# 2. Assign and Verify Paths
+COLLECTION="$COLLECTION_PATH"
+ENVIRONMENT="$ENVIRONMENT_PATH"
 
-# Directory Configuration
+# Debug: Print the paths to verify they are loaded
+echo "------------------------------------------------------------"
+echo "🔍 Debugging Paths:"
+echo "Collection Path:  '$COLLECTION'"
+echo "Environment Path: '$ENVIRONMENT'"
+
+# 3. File Existence Check (Fails early if files are missing)
+if [ ! -f "$COLLECTION" ]; then
+    echo "❌ ERROR: Collection file not found at: $COLLECTION"
+    exit 1
+fi
+
+if [ ! -f "$ENVIRONMENT" ]; then
+    echo "❌ ERROR: Environment file not found at: $ENVIRONMENT"
+    exit 1
+fi
+
+# 4. Directory Logic
 BASE_REPORT_DIR="./reports"
 HTML_DIR="$BASE_REPORT_DIR/HTML_Report"
 JUNIT_DIR="$BASE_REPORT_DIR/JUnit_Report"
-
-REPORT_NAME="Grocery_Store_Contract_Tests"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-# 3. Prepare Folders
-mkdir -p "$HTML_DIR"
-mkdir -p "$JUNIT_DIR"
-
-# Define Final Paths
-HTML_REPORT_PATH="$HTML_DIR/${REPORT_NAME}_${TIMESTAMP}.html"
-JUNIT_REPORT_PATH="$JUNIT_DIR/${REPORT_NAME}_${TIMESTAMP}.xml"
-
-# 4. Construct API URLs
-COLLECTION_URL="https://api.getpostman.com/collections/$COLLECTION_ID?apikey=$API_KEY"
-ENV_URL="https://api.getpostman.com/environments/$ENV_ID?apikey=$API_KEY"
+mkdir -p "$HTML_DIR" "$JUNIT_DIR"
 
 echo "------------------------------------------------------------"
-echo "Starting Newman Execution"
-echo "Timestamp: $TIMESTAMP"
+echo "🚀 Running Local Automation: $(date)"
 echo "------------------------------------------------------------"
 
-# 5. Run Newman with Multiple Reporters
-# -r cli,htmlextra,junit enables all three output types
-newman run "$COLLECTION_URL" \
-    -e "$ENV_URL" \
+# 5. Execute Newman
+# We use "$VAR" everywhere to ensure spaces in filenames don't break the command
+newman run "$COLLECTION" \
+    -e "$ENVIRONMENT" \
+    --env-var "access_token=$POSTMAN_ACCESS_TOKEN" \
     -r cli,htmlextra,junit \
-    --reporter-htmlextra-export "$HTML_REPORT_PATH" \
-    --reporter-htmlextra-title "Automated API Test Report: $REPORT_NAME" \
+    --reporter-htmlextra-export "$HTML_DIR/Report_$TIMESTAMP.html" \
     --reporter-htmlextra-darkTheme \
-    --reporter-junit-export "$JUNIT_REPORT_PATH"
+    --reporter-junit-export "$JUNIT_DIR/Results_$TIMESTAMP.xml"
 
-# 6. Success/Failure Check
+# 6. Final Status
 if [ $? -eq 0 ]; then
-    echo "SUCCESS: All tests passed."
-    echo "HTML Report: $HTML_REPORT_PATH"
-    echo "JUnit XML:   $JUNIT_REPORT_PATH"
+    echo "------------------------------------------------------------"
+    echo "✅ SUCCESS: Reports generated in $BASE_REPORT_DIR"
 else
-    echo "FAILURE: Some tests failed. Check reports for details."
+    echo "------------------------------------------------------------"
+    echo "❌ FAILURE: Tests failed. Check HTML reports for debugging."
     exit 1
 fi
