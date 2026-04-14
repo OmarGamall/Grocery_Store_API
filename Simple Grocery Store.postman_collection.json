@@ -111,7 +111,7 @@
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
                       "\r",
-                      "pm.test(\"At Least one available product exists\", () => {\r",
+                      "pm.test(\"Check the response body for a valid product array\", () => {\r",
                       "    const responseJson = pm.response.json(); // Parse\r",
                       "    // check if the response is an array and has at least one item\r",
                       "    pm.expect(responseJson).to.be.an('array');\r",
@@ -126,11 +126,6 @@
                       "    pm.expect(product).to.have.property('name');\r",
                       "    pm.expect(product).to.have.property('category');\r",
                       "    pm.expect(product.inStock).to.be.true;\r",
-                      "    // set variables for next reuests\r",
-                      "    pm.collectionVariables.set(\"productId\", product.id);\r",
-                      "    pm.collectionVariables.set(\"productName\", product.name);\r",
-                      "    pm.collectionVariables.set(\"productCategory\", product.category);\r",
-                      "    pm.collectionVariables.set(\"productInStock\", product.inStock);\r",
                       "});\r",
                       "\r",
                       "\r",
@@ -157,7 +152,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/products",
+                  "raw": "{{baseUrl}}/products?available=true",
                   "host": [
                     "{{baseUrl}}"
                   ],
@@ -180,8 +175,7 @@
                     {
                       "key": "available",
                       "value": "true",
-                      "description": "Type: Boolean\n\nRequired: No\n\n",
-                      "disabled": true
+                      "description": "Type: Boolean\n\nRequired: No\n\n"
                     }
                   ]
                 }
@@ -295,21 +289,6 @@
                 }
               ],
               "request": {
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "password",
-                      "value": "#c0mr3csuper#",
-                      "type": "string"
-                    },
-                    {
-                      "key": "username",
-                      "value": "ffawzy",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -368,21 +347,6 @@
                 }
               ],
               "request": {
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "password",
-                      "value": "#c0mr3csuper#",
-                      "type": "string"
-                    },
-                    {
-                      "key": "username",
-                      "value": "ffawzy",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -475,21 +439,6 @@
                 }
               ],
               "request": {
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "password",
-                      "value": "#c0mr3csuper#",
-                      "type": "string"
-                    },
-                    {
-                      "key": "username",
-                      "value": "ffawzy",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -559,6 +508,7 @@
                   "script": {
                     "exec": [
                       "{\r",
+                      "    // Generate a random category from the list of categories and set it as a collection variable\r",
                       "    const categories = [ 'meat-seafood', 'fresh-produce', 'candy', 'bread-bakery', 'dairy', 'eggs', 'coffee'];\r",
                       "    const randomCategory = categories[Math.floor(Math.random() * categories.length)];\r",
                       "    pm.collectionVariables.set(\"category\",randomCategory);\r",
@@ -572,21 +522,6 @@
                 }
               ],
               "request": {
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "password",
-                      "value": "#c0mr3csuper#",
-                      "type": "string"
-                    },
-                    {
-                      "key": "username",
-                      "value": "ffawzy",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -634,7 +569,7 @@
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
                       "\r",
-                      "pm.test(\"At Least one available product exists\", () => {\r",
+                      "pm.test(\"Test the selected product and store its data for next requests\", () => {\r",
                       "    const responseJson = pm.response.json(); // Parse\r",
                       "    // check if the response is an array and has at least one item\r",
                       "    pm.expect(responseJson).to.be.an('array');\r",
@@ -668,21 +603,6 @@
                 }
               ],
               "request": {
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "password",
-                      "value": "#c0mr3csuper#",
-                      "type": "string"
-                    },
-                    {
-                      "key": "username",
-                      "value": "ffawzy",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -1117,7 +1037,7 @@
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
                       "\r",
-                      "pm.test(\"At Least one available product exists\", () => {\r",
+                      "pm.test(\"Test the selected product and store its data for next requests\", () => {\r",
                       "    const responseJson = pm.response.json(); // Parse\r",
                       "    // check if the response is an array and has at least one item\r",
                       "    pm.expect(responseJson).to.be.an('array');\r",
@@ -1160,21 +1080,6 @@
                 }
               ],
               "request": {
-                "auth": {
-                  "type": "basic",
-                  "basic": [
-                    {
-                      "key": "password",
-                      "value": "#c0mr3csuper#",
-                      "type": "string"
-                    },
-                    {
-                      "key": "username",
-                      "value": "ffawzy",
-                      "type": "string"
-                    }
-                  ]
-                },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -1225,7 +1130,9 @@
                       "    // Save to a variable so the Body can access it\r",
                       "    pm.collectionVariables.set(\"NewProductQuantity\", randomQty);\r",
                       "\r",
-                      "    console.log(`SDET Log: Generated random quantity: ${randomQty}`);\r",
+                      "    console.log(`Log: Generated random quantity: ${randomQty}\r",
+                      "                Note This test is Flaky because the system doesn't provide a method\r",
+                      "                to detect the quantity in stock for the product`);\r",
                       "}"
                     ],
                     "type": "text/javascript",
@@ -1241,6 +1148,7 @@
                       "pm.test(\"Status code is 204\", function () {\r",
                       "    pm.response.to.have.status(204);\r",
                       "});\r",
+                      "\r",
                       ""
                     ],
                     "type": "text/javascript",
@@ -1793,7 +1701,42 @@
               "response": []
             },
             {
-              "name": "Update an order",
+              "name": "Update an order comments",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "// Generate a random comment for the order update\r",
+                      "const randomComment = `Order updated on ${new Date().toLocaleString()}`;\r",
+                      "\r",
+                      "// log the random comment to the console\r",
+                      "console.log(\"Random Comment:\", randomComment);\r",
+                      "\r",
+                      "// set the comment in collectionVariables\r",
+                      "pm.collectionVariables.set(\"orderComment\", randomComment);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
               "request": {
                 "method": "PATCH",
                 "header": [
@@ -1805,7 +1748,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"comment\": \"Hello Coffee\"\r\n}",
+                  "raw": "{\r\n    \"comment\": \"{{orderComment}}\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1832,7 +1775,106 @@
               "response": []
             },
             {
+              "name": "Check the Updated Order Comment",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "{\r",
+                      "    const response = pm.response.json();\r",
+                      "\r",
+                      "    // 1. Basic Response & Connectivity\r",
+                      "    pm.test(\"Status code is 200 OK\", () => {\r",
+                      "        pm.response.to.have.status(200);\r",
+                      "    });\r",
+                      "\r",
+                      "    pm.test(\"Response is a valid Order object\", () => {\r",
+                      "        pm.expect(response).to.be.an(\"object\");\r",
+                      "        pm.expect(response.id).to.eql(pm.collectionVariables.get(\"orderId\"));\r",
+                      "    });\r",
+                      "\r",
+                      "    // 2. Data Integrity (Business Logic)\r",
+                      "    pm.test(\"Customer name matches the generated customerName\", () => {\r",
+                      "        const expectedName = pm.collectionVariables.get(\"customerName\");\r",
+                      "        pm.expect(response.customerName).to.eql(expectedName);\r",
+                      "    });\r",
+                      "\r",
+                      "    pm.test(\"Order contains the correct item details\", () => {\r",
+                      "        pm.expect(response.items).to.be.an(\"array\").and.not.be.empty;\r",
+                      "        const length = response.items.length;\r",
+                      "        const lastAddedItem = response.items[length - 1];\r",
+                      "        // Compare against the productId we saved during the 'Add to Cart' phase\r",
+                      "        const expectedProductId = Number(pm.collectionVariables.get(\"productId\"));\r",
+                      "        \r",
+                      "        pm.expect(lastAddedItem.productId).to.eql(expectedProductId);\r",
+                      "        pm.expect(lastAddedItem.quantity).to.be.at.least(1);\r",
+                      "    });\r",
+                      "\r",
+                      "    // 3. Timestamp Validation\r",
+                      "    pm.test(\"Created date is a valid ISO string\", () => {\r",
+                      "        const isoRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/;\r",
+                      "        pm.expect(response.created).to.match(isoRegex);\r",
+                      "    });\r",
+                      "\r",
+                      "    // 4. Comment Validation\r",
+                      "    pm.test(\"Order has valid comment\", () => {\r",
+                      "        pm.expect(response.comment).to.be.a(\"string\").and.not.be.empty;\r",
+                      "        pm.expect(response.comment).to.eql(pm.collectionVariables.get(\"orderComment\"));\r",
+                      "    });\r",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/orders/: orderId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    ": orderId"
+                  ],
+                  "variable": [
+                    {
+                      "key": " orderId",
+                      "value": "{{orderId}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Delete an order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
               "request": {
                 "method": "DELETE",
                 "header": [
@@ -1854,6 +1896,57 @@
                   "variable": [
                     {
                       "key": "orderId",
+                      "value": "{{orderId}}"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Check the Deleted Order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"status code is 404\", function () {\r",
+                      "    pm.response.to.have.status(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"error message is correct\", function () {\r",
+                      "    pm.expect(pm.response.json().error).to.include(\"No order with id\");\r",
+                      "    pm.expect(pm.response.json().error).to.include(pm.collectionVariables.get(\"orderId\"));\r",
+                      "});\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/orders/: orderId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    ": orderId"
+                  ],
+                  "variable": [
+                    {
+                      "key": " orderId",
                       "value": "{{orderId}}"
                     }
                   ]
@@ -4018,35 +4111,35 @@
   "variable": [
     {
       "key": "cartId",
-      "value": "r55qUZ7xPw2gJ-DjvX26f"
+      "value": "SivSd_tanR5FX7le6w_Lr"
     },
     {
       "key": "orderId",
-      "value": "5SAlVIOXl8BrSUt9qB3qx"
+      "value": "SIi0AK8g5xSPUbRK2YGKY"
     },
     {
       "key": "resultsLimit",
-      "value": "3"
+      "value": 8
     },
     {
       "key": "category",
-      "value": "fresh-produce"
+      "value": "candy"
     },
     {
       "key": "productId",
-      "value": 2585
+      "value": 4641
     },
     {
       "key": "productName",
-      "value": "Green Cabbage Organic"
+      "value": "Don Francisco Colombia Supremo Medium Roast"
     },
     {
       "key": "productCategory",
-      "value": "fresh-produce"
+      "value": "coffee"
     },
     {
       "key": "lastAddedItemId",
-      "value": 629600382
+      "value": 365870957
     },
     {
       "key": "productInStock",
@@ -4058,27 +4151,27 @@
     },
     {
       "key": "customerName",
-      "value": "Frankie Shanahan Jr."
+      "value": "Pauline Sanford"
     },
     {
       "key": "productQuantity",
-      "value": 1
+      "value": 2
     },
     {
       "key": "productIdx",
-      "value": 4
+      "value": 7
     },
     {
       "key": "NewProductId",
-      "value": "4641"
+      "value": 5774
     },
     {
       "key": "NewProductQuantity",
-      "value": "1"
+      "value": 1
     },
     {
       "key": "InvalidProductId",
-      "value": "1000"
+      "value": 1000
     },
     {
       "key": "overStockQty",
@@ -4086,7 +4179,11 @@
     },
     {
       "key": "access_token",
-      "value": ""
+      "value": "ccb809961cd9ecceb36ecb6a8114d1b9b51b01ec20602a2453ff5a2c19775d91"
+    },
+    {
+      "key": "orderComment",
+      "value": "Order updated on 4/14/2026, 12:14:17 PM"
     }
   ]
 }
