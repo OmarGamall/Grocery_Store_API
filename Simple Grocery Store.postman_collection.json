@@ -2,6 +2,7 @@
   "info": {
     "_postman_id": "7a2100b1-999b-4f66-bf23-32abbd0129ee",
     "name": "Simple Grocery Store",
+    "description": "# Simple Grocery Store API\n\nThis API allows you to place a grocery order which will be ready for pick-up in the store.\n\nThe API is available at `https://simple-grocery-store-api.click`\n\n## Endpoints\n\n- [Status](#Status)\n- [Products](#Products)\n  - [Get all products](#Get-all-products)\n  - [Get a product](#Get-a-product)\n- [Cart](#Cart)\n  - [Get a cart](#Get-a-cart)\n  - [Get cart items](#Get-cart-items)\n  - [Create a new cart](#Create-a-new-cart)\n  - [Add an item to cart](#Add-an-item-to-cart)\n  - [Modify an item in the cart](#Modify-an-item-in-the-cart)\n  - [Replace an item in the cart](#Replace-an-item-in-the-cart)\n  - [Delete an item in the cart](#Delete-an-item-in-the-cart)\n- [Orders](#Orders)\n  - [Get all orders](#Get-all-orders)\n  - [Get a single order](#Get-a-single-order)\n  - [Create a new order](#Create-a-new-order)\n  - [Update an order](#Update-an-order)\n  - [Delete an order](#Delete-an-order)\n- [API Authentication](#API-Authentication)\n  - [Register a new API client](#Register-a-new-API-client)\n\n## Status\n\n**`GET /status`**\n\nReturns the status of the API. Example response:\n\n```\n{\n    \"status\": \"UP\"\n}\n```\n\nStatus `UP` indicates that the API is running as expected.\n\nNo response or any other response indicates that the API is not functioning correctly.\n\n## Products\n\n### Get all products\n\n**`GET /products`**\n\nReturns a list of products from the inventory.\n\n**Parameters**\n\n| Name        | Type    | In    | Required | Description                                                                                                                                          |\n| ----------- | ------- | ----- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |\n| `category`  | string  | query | No       | Specifies the category of products you want to be returned. It can be one of: meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee. |\n| `results`   | integer | query | No       | Specifies the number of results you want. Must be number between 1 and 20. By default, only 20 products will be displayed.                           |\n| `available` | boolean | query | No       | Specifies the availability of the products. By default, all products will be displayed.                                                              |\n\n**Status codes**\n| Status code | Description |\n|-----------------|-----------------------------------------------------|\n| 200 OK | Indicates a successful response. |\n| 400 Bad Request | Indicates that the parameters provided are invalid. |\n\nExample response:\n\n```\n[\n    {\n        \"id\": 4643,\n        \"category\": \"coffee\",\n        \"name\": \"Starbucks Coffee Variety Pack, 100% Arabica\",\n        \"inStock\": true\n    },\n    {\n        \"id\": 4646,\n        \"category\": \"coffee\",\n        \"name\": \"Ethical Bean Medium Dark Roast, Espresso\",\n        \"inStock\": true\n    },\n    ...\n]\n```\n\n### Get a product\n\n**`GET /products/:productId`**\n\nReturns a single product from the inventory.\n\n**Parameters**\n\n| Name            | Type    | In    | Required | Description                                      |\n| --------------- | ------- | ----- | -------- | ------------------------------------------------ |\n| `productId`     | integer | path  | Yes      | Specifies the product's id you wish to retrieve. |\n| `product-label` | boolean | query | No       | Returns the product label in PDF format.         |\n\n**Status codes**\n\n| Status code   | Description                                               |\n| ------------- | --------------------------------------------------------- |\n| 200 OK        | Indicates a successful response.                          |\n| 404 Not found | Indicates that there is no product with the specified id. |\n\n## Cart\n\n### Get a cart\n\n**`GET /carts/:cartId`**\n\nReturns a cart.\n\n**Parameters**\n\n| Name     | Type   | In   | Required | Description                                        |\n| -------- | ------ | ---- | -------- | -------------------------------------------------- |\n| `cartId` | string | path | Yes      | Specifies the id of the cart you wish to retrieve. |\n\n**Status codes**\n\n| Status code   | Description                                            |\n| ------------- | ------------------------------------------------------ |\n| 200 OK        | Indicates a successful response.                       |\n| 404 Not found | Indicates that there is no cart with the specified id. |\n\n### Get cart items\n\nReturns the items in a cart.\n\n**`GET /carts/:cartId/items`**\n\n**Parameters**\n\n| Name     | Type   | In   | Required | Description                                                            |\n| -------- | ------ | ---- | -------- | ---------------------------------------------------------------------- |\n| `cartId` | string | path | Yes      | Specifies the id of the cart for which you wish to retrieve the items. |\n\n**Status codes**\n\n| Status code   | Description                                            |\n| ------------- | ------------------------------------------------------ |\n| 200 OK        | Indicates a successful response.                       |\n| 404 Not found | Indicates that there is no cart with the specified id. |\n\n### Create a new cart\n\nTo create a new cart, submit an empty POST request to the `/carts` endpoint.\n\n**`POST /carts`**\n\nCreates a new cart and returns the id in the response body.\n\n**Parameters**\n\nNo parameters are accepted for this request.\n\n**Status codes**\n\n| Status code | Description                                            |\n| ----------- | ------------------------------------------------------ |\n| 201 Created | Indicates that the cart has been created successfully. |\n\nExample response body:\n\n```\n{\n   \"created\": true,\n   \"cartId\": \"bx0-ycNjqIm5IvufuuZ09\"\n}\n```\n\n### Add an item to cart\n\nAllows the addition of items to an existing cart. Only one item can be added at a time.\n\n**`POST /carts/:cartId/items`**\n\nThe request body needs to be in JSON format.\n\n**Parameters**\n\n| Name        | Type    | In   | Required | Description                                         |\n| ----------- | ------- | ---- | -------- | --------------------------------------------------- |\n| `cartId`    | string  | path | Yes      | Specifies the cart id.                              |\n| `productId` | integer | body | Yes      | Specifies the product id                            |\n| `quantity`  | integer | body | No       | If no quantity is provided, the default value is 1. |\n\nExample request body:\n\n```\n{\n   \"productId\": 1234\n}\n```\n\n**Status codes**\n\n| Status code     | Description                                          |\n| --------------- | ---------------------------------------------------- |\n| 201 Created     | Indicates that the item has been added successfully. |\n| 400 Bad Request | Indicates that the parameters provided are invalid.  |\n\n### Modify an item in the cart\n\nAllows modifying information about an item in the cart.\n\n**`PATCH /carts/:cartId/items/:itemId`**\n\nThe request body needs to be in JSON format.\n\n**Parameters**\n\n| Name       | Type    | In   | Required | Description            |\n| ---------- | ------- | ---- | -------- | ---------------------- |\n| `cartId`   | string  | path | Yes      | Specifies the cart id. |\n| `itemId`   | string  | path | Yes      | Specifies the item id. |\n| `quantity` | integer | body | Yes      | Quantity               |\n\n**Status codes**\n\n| Status code     | Description                                                    |\n| --------------- | -------------------------------------------------------------- |\n| 204 No Content  | Indicates that the item has been updated successfully.         |\n| 400 Bad Request | Indicates that the parameters provided are invalid or missing. |\n| 404 Not found   | The cart or the item could not be found.                       |\n\n### Replace an item in the cart\n\nReplace an item in the cart.\n\n**`PUT /carts/:cartId/items/:itemId`**\n\nThe request body needs to be in JSON format.\n\n**Parameters**\n\n| Name        | Type    | In   | Required | Description               |\n| ----------- | ------- | ---- | -------- | ------------------------- |\n| `cartId`    | string  | path | Yes      | Specifies the cart id.    |\n| `itemId`    | string  | path | Yes      | Specifies the item id.    |\n| `productId` | integer | body | Yes      | Specifies the product id. |\n| `quantity`  | integer | body | No       | Quantity                  |\n\n**Status codes**\n\n| Status code     | Description                                                    |\n| --------------- | -------------------------------------------------------------- |\n| 204 No Content  | Indicates that the item has been updated successfully.         |\n| 400 Bad Request | Indicates that the parameters provided are invalid or missing. |\n| 404 Not found   | The cart or the item could not be found.                       |\n\n### Delete an item in the cart\n\nDeletes an item in the cart.\n\n**`DELETE /carts/:cartId/items/:itemId`**\n\n**Parameters**\n\n| Name        | Type   | In   | Required | Description             |\n| ----------- | ------ | ---- | -------- | ----------------------- |\n| `cartId`    | string | path | Yes      | Specifies the cart id.  |\n| `itemId`    | string | path | Yes      | Specifies the item id.  |\n\n**Status codes**\n\n| Status code    | Description                                            |\n| -------------- | ------------------------------------------------------ |\n| 204 No Content | Indicates that the item has been deleted successfully. |\n| 404 Not found  | The cart or the item could not be found.               |\n\n## Orders\n\n### Get all orders\n\nReturns all orders created by the API client.\n\n**`GET /orders`**\n\n**Parameters**\n\n| Name            | Type   | In     | Required | Description                                   |\n| --------------- | ------ | ------ | -------- | --------------------------------------------- |\n| `Authorization` | string | header | Yes      | Specifies the bearer token of the API client. |\n\n**Status codes**\n\n| Status code      | Description                                                                                            |\n| ---------------- | ------------------------------------------------------------------------------------------------------ |\n| 200 OK           | Indicates a successful response.                                                                       |\n| 401 Unauthorized | Indicates that the request has not been authenticated. Check the response body for additional details. |\n\n### Get a single order\n\nReturns a single order.\n\n**`GET /orders/:orderId`**\n\n**Parameters**\n\n| Name            | Type    | In     | Required | Description                         |\n| --------------- | ------- | ------ | -------- | ----------------------------------- |\n| `Authorization` | string  | header | Yes      | The bearer token of the API client. |\n| `orderId`       | string  | path   | Yes      | The order id.                       |\n| `invoice`       | boolean | query  | No       | Show the PDF invoice.               |\n\n**Status codes**\n\n| Status code      | Description                                                                                            |\n| ---------------- | ------------------------------------------------------------------------------------------------------ |\n| 200 OK           | Indicates a successful response.                                                                       |\n| 401 Unauthorized | Indicates that the request has not been authenticated. Check the response body for additional details. |\n| 404 Not found    | Indicates that there is no order with the specified id associated with the API client.                 |\n\n### Create a new order\n\n**`POST /orders`**\n\nThe request body needs to be in JSON format.\nOnce the order has been successfully submitted, the cart is deleted.\n\n**Parameters**\n\n| Name            | Type   | In     | Required | Description                          |\n| --------------- | ------ | ------ | -------- | ------------------------------------ |\n| `Authorization` | string | header | Yes      | The bearer token of the API client.  |\n| `cartId`        | string | body   | Yes      | The cart id                          |\n| `customerName`  | string | body   | Yes      | The name of the customer.            |\n| `comment`       | string | body   | No       | A comment associated with the order. |\n\nExample request body:\n\n```\n{\n    \"cartId\": \"ZFe4yhG5qNhmuNyrbLWa4\",\n    \"customerName\": \"John Doe\"\n}\n```\n\n**Status codes**\n\n| Status code      | Description                                                                                            |\n| ---------------- | ------------------------------------------------------------------------------------------------------ |\n| 201 Created      | Indicates that the order has been created successfully.                                                |\n| 400 Bad Request  | Indicates that the parameters provided are invalid.                                                    |\n| 401 Unauthorized | Indicates that the request has not been authenticated. Check the response body for additional details. |\n\n### Update an order\n\n**`PATCH /orders/:orderId`**\n\nThe request body needs to be in JSON format.\n\n**Parameters**\n\n| Name            | Type   | In     | Required | Description                          |\n| --------------- | ------ | ------ | -------- | ------------------------------------ |\n| `Authorization` | string | header | Yes      | The bearer token of the API client.  |\n| `orderId`       | string | path   | Yes      | The order id.                        |\n| `customerName`  | string | body   | No       | The name of the customer.            |\n| `comment`       | string | body   | No       | A comment associated with the order. |\n\n**Status codes**\n\n| Status code      | Description                                                                                            |\n| ---------------- | ------------------------------------------------------------------------------------------------------ |\n| 204 No Content   | Indicates that the order has been updated successfully.                                                |\n| 400 Bad Request  | Indicates that the parameters provided are invalid.                                                    |\n| 401 Unauthorized | Indicates that the request has not been authenticated. Check the response body for additional details. |\n| 404 Not found    | Indicates that there is no order with the specified id associated with the API client.                 |\n\nExample request body:\n\n```\n{\n \"customerName\": \"Joe Doe\"\n}\n```\n\n### Delete an order\n\n**`DELETE /orders/:orderId`**\n\n**Parameters**\n\n| Name            | Type   | In     | Required | Description                         |\n| --------------- | ------ | ------ | -------- | ----------------------------------- |\n| `Authorization` | string | header | Yes      | The bearer token of the API client. |\n| `orderId`       | string | path   | Yes      | The order id.                       |\n\n**Status codes**\n\n| Status code      | Description                                                                                            |\n| ---------------- | ------------------------------------------------------------------------------------------------------ |\n| 204 No Content   | Indicates that the order has been deleted successfully.                                                |\n| 400 Bad Request  | Indicates that the parameters provided are invalid.                                                    |\n| 401 Unauthorized | Indicates that the request has not been authenticated. Check the response body for additional details. |\n| 404 Not found    | Indicates that there is no order with the specified id associated with the API client.                 |\n\n## API Authentication\n\nSome endpoints may require authentication. To submit or view an order, you need to register your API client and obtain an access token.\n\nThe endpoints that require authentication expect a bearer token sent in the `Authorization` header.\n\nExample:\n\n`Authorization: Bearer YOUR TOKEN`\n\n### Register a new API client\n\n**`POST /api-clients`**\n\n**Parameters**\n\nThe request body needs to be in JSON format.\n\n| Name          | Type   | In   | Required | Description                            |\n| ------------- | ------ | ---- | -------- | -------------------------------------- |\n| `clientName`  | string | body | Yes      | The name of the API client.            |\n| `clientEmail` | string | body | Yes      | The email address of the API client. * |\n\n\n* The email address DOES NOT need to be real. The email will not be stored on the server.\n\n**Status codes**\n\n| Status code     | Description                                                                       |\n|-----------------|-----------------------------------------------------------------------------------|\n| 201 Created     | Indicates that the client has been registered successfully.                       |\n| 400 Bad Request | Indicates that the parameters provided are invalid.                               |\n| 409 Conflict    | Indicates that an API client has already been registered with this email address. |\n\nExample request body:\n\n```\n{\n   \"clientName\": \"Postman on Valentin's computer\",\n   \"clientEmail\": \"valentin@example.com\"\n}\n```\n\nThe response body will contain the access token.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "48040576",
     "_collection_link": "https://go.postman.co/collection/48040576-7a2100b1-999b-4f66-bf23-32abbd0129ee?source=collection_link"
@@ -69,6 +70,17 @@
                     "packages": {},
                     "requests": {}
                   }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
                 }
               ],
               "request": {
@@ -101,6 +113,107 @@
           "name": "PRODUCTS",
           "item": [
             {
+              "name": "Test All Products Categories (DDT)",
+              "item": [
+                {
+                  "name": "Get Products with certain category",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "// get the list of categories first\r",
+                          "let categories = pm.collectionVariables.get(\"categories\");\r",
+                          "\r",
+                          "if (categories && categories.length > 0) {\r",
+                          "  pm.execution.setNextRequest(\"Get Products with certain category\"); // loop\r",
+                          "\r",
+                          "  // Tests & Validations\r",
+                          "  pm.test(\"Status code is 200\", function () {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "  });\r",
+                          "\r",
+                          "  pm.test(\"Check that products type match the category type\", function () {\r",
+                          "    let responseBody = pm.response.json();\r",
+                          "    let expectedCategory = pm.collectionVariables.get(\"category\");\r",
+                          "    for (let i = 0; i < responseBody.length; i++) {\r",
+                          "      pm.expect(responseBody[i].category).to.eql(expectedCategory);\r",
+                          "    }\r",
+                          "  });\r",
+                          "\r",
+                          "} else {\r",
+                          "  // cleanup\r",
+                          "  pm.collectionVariables.unset(\"categories\");\r",
+                          "  pm.collectionVariables.unset(\"category\");\r",
+                          "\r",
+                          "  // continue the run normally (don't stop it)\r",
+                          "  pm.execution.setNextRequest(\"Get all products\");\r",
+                          "}"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "{\r",
+                          "    let categories = pm.collectionVariables.get(\"categories\");\r",
+                          "    if(!categories)\r",
+                          "    {\r",
+                          "        categories = [ 'meat-seafood', 'fresh-produce', 'candy', 'bread-bakery', 'dairy', 'eggs', 'coffee'];\r",
+                          "        \r",
+                          "    }\r",
+                          "    let category = categories.shift();\r",
+                          "    pm.collectionVariables.set(\"categories\",categories);\r",
+                          "    pm.collectionVariables.set(\"category\",category); // current category\r",
+                          "}"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/products?category={{category}}",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "products"
+                      ],
+                      "query": [
+                        {
+                          "key": "category",
+                          "value": "{{category}}",
+                          "description": "Type: String\n\nRequired: No\n\nPossible Values: {meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee}\n \n"
+                        },
+                        {
+                          "key": "available",
+                          "value": "true",
+                          "description": "Type: Boolean\n\nRequired: No\n\n",
+                          "disabled": true
+                        },
+                        {
+                          "key": "results",
+                          "value": "{{resultsLimit}}",
+                          "description": "Type: integer\n\nRequired: No\n\nValues: {1 to 20}",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "Get all products",
               "event": [
                 {
@@ -118,15 +231,58 @@
                       "    pm.expect(responseJson.length).to.be.at.least(1);\r",
                       "    const index = Math.floor(Math.random() * ((responseJson.length)));\r",
                       "    console.log(`Log: Generated random index: ${index}`);\r",
-                      "    const product = responseJson[index];\r",
+                      "    const targetProduct = responseJson[index];\r",
                       "\r",
                       "    // check if the product object has the expected properties and values\r",
-                      "    pm.expect(product).to.be.an('object');\r",
-                      "    pm.expect(product).to.have.property('id');\r",
-                      "    pm.expect(product).to.have.property('name');\r",
-                      "    pm.expect(product).to.have.property('category');\r",
-                      "    pm.expect(product.inStock).to.be.true;\r",
+                      "    pm.expect(targetProduct).to.be.an('object');\r",
+                      "    pm.expect(targetProduct).to.have.property('id');\r",
+                      "    pm.expect(targetProduct).to.have.property('name');\r",
+                      "    pm.expect(targetProduct).to.have.property('category');\r",
+                      "    pm.expect(targetProduct.inStock).to.be.true;\r",
+                      "\r",
+                      "    // Store details for the specific product picked\r",
+                      "    pm.collectionVariables.set(\"productId\", targetProduct.id);\r",
+                      "    pm.collectionVariables.set(\"productName\", targetProduct.name);\r",
+                      "    pm.collectionVariables.set(\"productCategory\", targetProduct.category);\r",
+                      "    pm.collectionVariables.set(\"productInStock\", targetProduct.inStock);\r",
                       "});\r",
+                      "\r",
+                      "\r",
+                      "\r",
+                      "{\r",
+                      "    const productsSchema = {\r",
+                      "        \"type\": \"array\",\r",
+                      "        \"items\": {\r",
+                      "            \"type\": \"object\",\r",
+                      "            \"properties\": {\r",
+                      "                \"id\": {\r",
+                      "                    \"type\": \"number\"\r",
+                      "                },\r",
+                      "                \"category\": {\r",
+                      "                    \"type\": \"string\"\r",
+                      "                },\r",
+                      "                \"name\": {\r",
+                      "                    \"type\": \"string\"\r",
+                      "                },\r",
+                      "                \"inStock\": {\r",
+                      "                    \"type\": \"boolean\"\r",
+                      "                }\r",
+                      "            },\r",
+                      "            \"required\": [\r",
+                      "                \"id\",\r",
+                      "                \"category\",\r",
+                      "                \"name\",\r",
+                      "                \"inStock\"\r",
+                      "            ]\r",
+                      "        }\r",
+                      "    };\r",
+                      "\r",
+                      "    // Schema validation: response should be an array of product objects\r",
+                      "    pm.test('Response schema is valid (products array)', function () {\r",
+                      "        pm.response.to.have.jsonSchema(productsSchema);\r",
+                      "    });\r",
+                      "}\r",
+                      "\r",
                       "\r",
                       "\r",
                       ""
@@ -189,12 +345,6 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "// pm.test(testName, specFunction);\r",
-                      "/*  function parameters\r",
-                      "    testName (String): A descriptive string that appears in the Test Results tab. It should describe the intent of the test (e.g., \"Status code is 201\").\r",
-                      "\r",
-                      "    specFunction (Callback Function): A function containing your assertions (usually using pm.expect). If this function throws an error or an assertion fails, the test is marked as FAILED.\r",
-                      " */\r",
                       "{\r",
                       "    // Define variable that hold the response body\r",
                       "    const responseBody = pm.response.json();\r",
@@ -203,19 +353,19 @@
                       "        pm.response.to.have.status(200);\r",
                       "    });\r",
                       "\r",
-                      "    pm.test(\"Response time is less than 200ms\",  () => {\r",
+                      "    pm.test(\"Response time is less than 200ms\", () => {\r",
                       "        pm.expect(pm.response.responseTime).to.be.below(1000);\r",
                       "    });\r",
                       "\r",
                       "    pm.test(\"Test Product ID\", () => {\r",
-                      "        pm.expect(responseBody.id).to.eql(parseInt(pm.collectionVariables.get(\"productId\"),10));\r",
+                      "        pm.expect(responseBody.id).to.eql(parseInt(pm.collectionVariables.get(\"productId\"), 10));\r",
                       "    });\r",
                       "\r",
                       "    pm.test(\"Test Product name\", () => {\r",
                       "        pm.expect(responseBody.name).to.eql(pm.collectionVariables.get(\"productName\"));\r",
                       "    });\r",
                       "\r",
-                      "    \r",
+                      "\r",
                       "    pm.test(\"Test Product In Stock\", () => {\r",
                       "        pm.expect(responseBody.inStock).to.be.eql(Boolean(pm.collectionVariables.get(\"productInStock\")));\r",
                       "    });\r",
@@ -224,7 +374,47 @@
                       "        pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json\");\r",
                       "    });\r",
                       "\r",
-                      "    console.log(pm.response.headers.get(\"Content-Type\"));\r",
+                      "    const productSchema = {\r",
+                      "        \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+                      "        \"title\": \"Generated schema for Root\",\r",
+                      "        \"type\": \"object\",\r",
+                      "        \"properties\": {\r",
+                      "            \"id\": {\r",
+                      "                \"type\": \"number\"\r",
+                      "            },\r",
+                      "            \"category\": {\r",
+                      "                \"type\": \"string\"\r",
+                      "            },\r",
+                      "            \"name\": {\r",
+                      "                \"type\": \"string\"\r",
+                      "            },\r",
+                      "            \"manufacturer\": {\r",
+                      "                \"type\": \"string\"\r",
+                      "            },\r",
+                      "            \"price\": {\r",
+                      "                \"type\": \"number\"\r",
+                      "            },\r",
+                      "            \"current-stock\": {\r",
+                      "                \"type\": \"number\"\r",
+                      "            },\r",
+                      "            \"inStock\": {\r",
+                      "                \"type\": \"boolean\"\r",
+                      "            }\r",
+                      "        },\r",
+                      "        \"required\": [\r",
+                      "            \"id\",\r",
+                      "            \"category\",\r",
+                      "            \"name\",\r",
+                      "            \"manufacturer\",\r",
+                      "            \"price\",\r",
+                      "            \"current-stock\",\r",
+                      "            \"inStock\"\r",
+                      "        ]\r",
+                      "    };\r",
+                      "\r",
+                      "    pm.test(\"Response body matches schema\", () => {\r",
+                      "        pm.response.to.have.jsonSchema(productSchema);\r",
+                      "        });\r",
                       "}"
                     ],
                     "type": "text/javascript",
@@ -263,12 +453,6 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "// This Dummy test shows that expect method if failed it will pause the execution of the next code lines\r",
-                      "/* pm.test(\"Dummy Failed Test\", function () {\r",
-                      "    pm.expect(1).to.equal(0); // This is another dummy test to show the structure\r",
-                      "    console.log(\"Dummy test\");    \r",
-                      "}); */\r",
-                      "\r",
                       "pm.test(\"Status code is 200\", function () {\r",
                       "    pm.response.to.have.status(200);\r",
                       "});\r",
@@ -559,84 +743,6 @@
           "name": "CART",
           "item": [
             {
-              "name": "Get Available Product to be added in Cart",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Test the selected product and store its data for next requests\", () => {\r",
-                      "    const responseJson = pm.response.json(); // Parse\r",
-                      "    // check if the response is an array and has at least one item\r",
-                      "    pm.expect(responseJson).to.be.an('array');\r",
-                      "    pm.expect(responseJson.length).to.be.at.least(1);\r",
-                      "    const index = Math.floor(Math.random() * ((responseJson.length)));\r",
-                      "    console.log(`Log: Generated random index: ${index}`);\r",
-                      "    pm.collectionVariables.set(\"productIdx\", index); // set variable for next requests\r",
-                      "    const product = responseJson[index];\r",
-                      "    console.log(`Log: Generated random product: ${JSON.stringify(product)}`);\r",
-                      "    \r",
-                      "    // check if the product object has the expected properties and values\r",
-                      "    pm.expect(product).to.be.an('object');\r",
-                      "    pm.expect(product).to.have.property('id');\r",
-                      "    pm.expect(product).to.have.property('name');\r",
-                      "    pm.expect(product).to.have.property('category');\r",
-                      "    pm.expect(product.inStock).to.be.true;\r",
-                      "    // set variables for next reuests\r",
-                      "    pm.collectionVariables.set(\"productId\", product.id);\r",
-                      "    pm.collectionVariables.set(\"productName\", product.name);\r",
-                      "    pm.collectionVariables.set(\"productCategory\", product.category);\r",
-                      "    pm.collectionVariables.set(\"productInStock\", product.inStock);\r",
-                      "});\r",
-                      "\r",
-                      "\r",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/products?available=true",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "products"
-                  ],
-                  "query": [
-                    {
-                      "key": "category",
-                      "value": "dairy",
-                      "description": "Type: String\n\nRequired: No\n\nPossible Values: {meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee}\n \n",
-                      "disabled": true
-                    },
-                    {
-                      "key": "results",
-                      "value": "20",
-                      "description": "Type: integer\n\nRequired: No\n\nValues: {1 to 20}",
-                      "disabled": true
-                    },
-                    {
-                      "key": "available",
-                      "value": "true",
-                      "description": "Type: Boolean\n\nRequired: No\n\n"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
               "name": "Create a New Cart",
               "event": [
                 {
@@ -682,6 +788,17 @@
                     "packages": {},
                     "requests": {}
                   }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
                 }
               ],
               "request": {
@@ -696,90 +813,6 @@
                     "carts"
                   ]
                 }
-              },
-              "response": []
-            },
-            {
-              "name": "Add Item to Cart",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 201\", function () {\r",
-                      "    pm.response.to.have.status(201);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Response body contains the correct item details\", function () {\r",
-                      "    const responseBody = pm.response.json();\r",
-                      "    pm.expect(responseBody).to.be.an(\"object\");\r",
-                      "    pm.expect(responseBody).to.have.property('itemId');\r",
-                      "    pm.expect(responseBody.itemId).to.be.a('number');\r",
-                      "    pm.expect(responseBody).to.have.property('created'); // Added check for 'created' property\r",
-                      "    pm.expect(responseBody.created).to.be.a('boolean');\r",
-                      "    pm.expect(responseBody.created).to.be.true;\r",
-                      "    pm.collectionVariables.set(\"lastAddedItemId\", responseBody.itemId);\r",
-                      "});\r",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                },
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "{\r",
-                      "    const min = 1;\r",
-                      "    const max = 5;\r",
-                      "\r",
-                      "    // Standard JavaScript logic to get a random integer inclusive of min and max\r",
-                      "    const randomQty = Math.floor(Math.random() * (max - min + 1)) + min;\r",
-                      "\r",
-                      "    // Save to a variable so the Body can access it\r",
-                      "    pm.collectionVariables.set(\"productQuantity\", randomQty);\r",
-                      "\r",
-                      "    console.log(`SDET Log: Generated random quantity: ${randomQty}`);\r",
-                      "}"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"productId\": {{productId}},\r\n    \"quantity\": {{productQuantity}}\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{baseUrl}}/carts/: cartId/items",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "carts",
-                    ": cartId",
-                    "items"
-                  ],
-                  "variable": [
-                    {
-                      "key": " cartId",
-                      "value": "{{cartId}}"
-                    }
-                  ]
-                },
-                "description": "Allows the addition of items to an existing cart. Only one item can be added at a time."
               },
               "response": []
             },
@@ -822,6 +855,127 @@
                     }
                   ]
                 }
+              },
+              "response": []
+            },
+            {
+              "name": "Add Item to Cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response body contains the correct item details\", function () {\r",
+                      "    const responseBody = pm.response.json();\r",
+                      "    pm.expect(responseBody).to.be.an(\"object\");\r",
+                      "    pm.expect(responseBody).to.have.property('itemId');\r",
+                      "    pm.expect(responseBody.itemId).to.be.a('number');\r",
+                      "    pm.expect(responseBody).to.have.property('created'); // Added check for 'created' property\r",
+                      "    pm.expect(responseBody.created).to.be.a('boolean');\r",
+                      "    pm.expect(responseBody.created).to.be.true;\r",
+                      "    pm.collectionVariables.set(\"lastAddedItemId\", responseBody.itemId);\r",
+                      "});\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "{\r",
+                      "    const baseUrl = pm.environment.get(\"baseUrl\");\r",
+                      "\r",
+                      "    const getAvailableProductsRequest = {\r",
+                      "        url: `${baseUrl}/products?available=true`,\r",
+                      "        method: 'GET',\r",
+                      "        header: { 'Accept': 'application/json' }\r",
+                      "    };\r",
+                      "\r",
+                      "    pm.sendRequest(getAvailableProductsRequest, (err, res) => {\r",
+                      "        pm.test(\"check response status\", () => {\r",
+                      "            pm.expect(res).to.have.status(200);\r",
+                      "        });\r",
+                      "\r",
+                      "        const products = res.json();\r",
+                      "\r",
+                      "        pm.test(\"Validate and Select Product\", () => {\r",
+                      "            pm.expect(products).to.be.an('array');\r",
+                      "\r",
+                      "            // 1. Filter the array first\r",
+                      "            // This creates a safe pool of only in-stock items\r",
+                      "            const availableProducts = products.filter((p) => {\r",
+                      "                return p.inStock === true;\r",
+                      "            });\r",
+                      "\r",
+                      "            pm.expect(availableProducts.length).to.be.at.least(1, \"No in-stock products found in response\");\r",
+                      "\r",
+                      "            // 2. RANDOM SELECTION: Pick only from the safe pool \r",
+                      "            let randomIndex = Math.floor(Math.random() * ((products.length)));\r",
+                      "            while (pm.collectionVariables.get(\"productIdx\") === randomIndex) {\r",
+                      "                randomIndex = Math.floor(Math.random() * ((products.length) + 1)); // regenerate index if it's already used\r",
+                      "            }\r",
+                      "            console.log(`Log: Generated random index: ${randomIndex}`);\r",
+                      "            const targetProduct = availableProducts[randomIndex];\r",
+                      "\r",
+                      "            // 3. ATOMIC DATA STORAGE\r",
+                      "            // Store details for the specific product picked\r",
+                      "            pm.collectionVariables.set(\"productId\", targetProduct.id);\r",
+                      "            pm.collectionVariables.set(\"productName\", targetProduct.name);\r",
+                      "            pm.collectionVariables.set(\"productCategory\", targetProduct.category);\r",
+                      "            pm.collectionVariables.set(\"productInStock\", targetProduct.inStock);\r",
+                      "\r",
+                      "            // get product quantity from user input or default to 1\r",
+                      "            pm.collectionVariables.set(\"productQuantity\", 1);\r",
+                      "\r",
+                      "            console.log(`Log: Picked [${targetProduct.category}] - ${targetProduct.name} (ID: ${targetProduct.id})`);\r",
+                      "        });\r",
+                      "    });\r",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"productId\": {{productId}},\r\n    \"quantity\": {{productQuantity}}\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/carts/: cartId/items",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "carts",
+                    ": cartId",
+                    "items"
+                  ],
+                  "variable": [
+                    {
+                      "key": " cartId",
+                      "value": "{{cartId}}"
+                    }
+                  ]
+                },
+                "description": "Allows the addition of items to an existing cart. Only one item can be added at a time."
               },
               "response": []
             },
@@ -908,17 +1062,30 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
+                      "// Get last added product and update its quantity\r",
                       "{\r",
-                      "    const min = 1;\r",
-                      "    const max = 5;\r",
+                      "    const baseUrl = pm.environment.get(\"baseUrl\");\r",
+                      "    const productId = pm.collectionVariables.get(\"productId\");\r",
+                      "    const getAvailableProductsRequest = {\r",
+                      "        url: `${baseUrl}/products/${productId}`,\r",
+                      "        method: 'GET',\r",
+                      "        header: { 'Accept': 'application/json' }\r",
+                      "    };\r",
                       "\r",
-                      "    // Standard JavaScript logic to get a random integer inclusive of min and max\r",
-                      "    const randomQty = Math.floor(Math.random() * (max - min + 1)) + min;\r",
+                      "    pm.sendRequest(getAvailableProductsRequest, (err, response) => {\r",
+                      "        pm.test(\"check response status\", () => {\r",
+                      "            pm.expect(response).to.have.status(200);\r",
+                      "        });\r",
                       "\r",
-                      "    // Save to a variable so the Body can access it\r",
-                      "    pm.collectionVariables.set(\"productQuantity\", randomQty);\r",
+                      "        const product = response.json();\r",
+                      "        let max = product[\"current-stock\"];\r",
+                      "        let min = 1;\r",
+                      "        let randomQty = Math.floor(Math.random() * (max - min + 1)) + min;\r",
                       "\r",
-                      "    console.log(`SDET Log: Generated random quantity: ${randomQty}`);\r",
+                      "        // Save to a variable so the Body can access it\r",
+                      "        pm.collectionVariables.set(\"productQuantity\", randomQty);\r",
+                      "        console.log(`SDET Log: Generated random quantity: ${randomQty}`);\r",
+                      "    });\r",
                       "}"
                     ],
                     "type": "text/javascript",
@@ -1027,93 +1194,6 @@
               "response": []
             },
             {
-              "name": "Get Another available product to replace added one",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 200\", function () {\r",
-                      "    pm.response.to.have.status(200);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Test the selected product and store its data for next requests\", () => {\r",
-                      "    const responseJson = pm.response.json(); // Parse\r",
-                      "    // check if the response is an array and has at least one item\r",
-                      "    pm.expect(responseJson).to.be.an('array');\r",
-                      "    pm.expect(responseJson.length).to.be.at.least(1);\r",
-                      "    let index = Math.floor(Math.random() * ((responseJson.length)));\r",
-                      "    while (pm.collectionVariables.get(\"productIdx\") === index) {\r",
-                      "        index = Math.floor(Math.random() * ((responseJson.length) + 1)); // regenerate index if it's already used\r",
-                      "    }\r",
-                      "    console.log(`Log: Generated random index: ${index}`);\r",
-                      "    const product = responseJson[index];\r",
-                      "\r",
-                      "    // check if the product object has the expected properties and values\r",
-                      "    pm.expect(product).to.be.an('object');\r",
-                      "    pm.expect(product).to.have.property('id');\r",
-                      "    pm.expect(product).to.have.property('name');\r",
-                      "    pm.expect(product).to.have.property('category');\r",
-                      "    pm.expect(product.inStock).to.be.true;\r",
-                      "    // set variables for next requests\r",
-                      "    pm.collectionVariables.set(\"NewProductId\", product.id);\r",
-                      "});\r",
-                      "\r",
-                      "\r",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                },
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {},
-                    "requests": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/products?available=true",
-                  "host": [
-                    "{{baseUrl}}"
-                  ],
-                  "path": [
-                    "products"
-                  ],
-                  "query": [
-                    {
-                      "key": "category",
-                      "value": "dairy",
-                      "description": "Type: String\n\nRequired: No\n\nPossible Values: {meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee}\n \n",
-                      "disabled": true
-                    },
-                    {
-                      "key": "results",
-                      "value": "20",
-                      "description": "Type: integer\n\nRequired: No\n\nValues: {1 to 20}",
-                      "disabled": true
-                    },
-                    {
-                      "key": "available",
-                      "value": "true",
-                      "description": "Type: Boolean\n\nRequired: No\n\n"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
               "name": "Replace an item in the cart",
               "event": [
                 {
@@ -1121,18 +1201,51 @@
                   "script": {
                     "exec": [
                       "{\r",
-                      "    const min = 1;\r",
-                      "    const max = 5;\r",
+                      "    const baseUrl = pm.environment.get(\"baseUrl\");\r",
                       "\r",
-                      "    // Standard JavaScript logic to get a random integer inclusive of min and max\r",
-                      "    const randomQty = Math.floor(Math.random() * (max - min + 1)) + min;\r",
+                      "    const getAvailableProductsRequest = {\r",
+                      "        url: `${baseUrl}/products?available=true`,\r",
+                      "        method: 'GET',\r",
+                      "        header: { 'Accept': 'application/json' }\r",
+                      "    };\r",
                       "\r",
-                      "    // Save to a variable so the Body can access it\r",
-                      "    pm.collectionVariables.set(\"NewProductQuantity\", randomQty);\r",
+                      "    pm.sendRequest(getAvailableProductsRequest, (err, res) => {\r",
+                      "        pm.test(\"check response status\", () => {\r",
+                      "            pm.expect(res).to.have.status(200);\r",
+                      "        });\r",
                       "\r",
-                      "    console.log(`Log: Generated random quantity: ${randomQty}\r",
-                      "                Note This test is Flaky because the system doesn't provide a method\r",
-                      "                to detect the quantity in stock for the product`);\r",
+                      "        const products = res.json();\r",
+                      "\r",
+                      "        pm.test(\"Validate and Select Product\", () => {\r",
+                      "            pm.expect(products).to.be.an('array');\r",
+                      "\r",
+                      "            // 1. Filter the array first\r",
+                      "            // This creates a safe pool of only in-stock items\r",
+                      "            const availableProducts = products.filter((p) => {\r",
+                      "                return p.inStock === true;\r",
+                      "            });\r",
+                      "\r",
+                      "            pm.expect(availableProducts.length).to.be.at.least(1, \"No in-stock products found in response\");\r",
+                      "\r",
+                      "            // 2. RANDOM SELECTION: Pick only from the safe pool \r",
+                      "            let randomIndex = Math.floor(Math.random() * ((products.length)));\r",
+                      "            while (pm.collectionVariables.get(\"productIdx\") === randomIndex) {\r",
+                      "                randomIndex = Math.floor(Math.random() * ((products.length) + 1)); // regenerate index if it's already used\r",
+                      "            }\r",
+                      "            console.log(`Log: Generated random index: ${randomIndex}`);\r",
+                      "            const targetProduct = availableProducts[randomIndex];\r",
+                      "\r",
+                      "            // 3. ATOMIC DATA STORAGE\r",
+                      "            // Store details for the specific product picked\r",
+                      "            pm.collectionVariables.set(\"NewProductId\", targetProduct.id);\r",
+                      "            \r",
+                      "\r",
+                      "            // get product quantity from user input or default to 1\r",
+                      "            pm.collectionVariables.set(\"NewProductQuantity\", 1);\r",
+                      "\r",
+                      "            console.log(`Log: Picked [${targetProduct.category}] - ${targetProduct.name} (ID: ${targetProduct.id})`);\r",
+                      "        });\r",
+                      "    });\r",
                       "}"
                     ],
                     "type": "text/javascript",
@@ -1360,6 +1473,84 @@
           "name": "ORDERS",
           "item": [
             {
+              "name": "Get Available Product to be added in Cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Test the selected product and store its data for next requests\", () => {\r",
+                      "    const responseJson = pm.response.json(); // Parse\r",
+                      "    // check if the response is an array and has at least one item\r",
+                      "    pm.expect(responseJson).to.be.an('array');\r",
+                      "    pm.expect(responseJson.length).to.be.at.least(1);\r",
+                      "    const index = Math.floor(Math.random() * ((responseJson.length)));\r",
+                      "    console.log(`Log: Generated random index: ${index}`);\r",
+                      "    pm.collectionVariables.set(\"productIdx\", index); // set variable for next requests\r",
+                      "    const product = responseJson[index];\r",
+                      "    console.log(`Log: Generated random product: ${JSON.stringify(product)}`);\r",
+                      "    \r",
+                      "    // check if the product object has the expected properties and values\r",
+                      "    pm.expect(product).to.be.an('object');\r",
+                      "    pm.expect(product).to.have.property('id');\r",
+                      "    pm.expect(product).to.have.property('name');\r",
+                      "    pm.expect(product).to.have.property('category');\r",
+                      "    pm.expect(product.inStock).to.be.true;\r",
+                      "    // set variables for next reuests\r",
+                      "    pm.collectionVariables.set(\"productId\", product.id);\r",
+                      "    pm.collectionVariables.set(\"productName\", product.name);\r",
+                      "    pm.collectionVariables.set(\"productCategory\", product.category);\r",
+                      "    pm.collectionVariables.set(\"productInStock\", product.inStock);\r",
+                      "});\r",
+                      "\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/products?available=true",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "products"
+                  ],
+                  "query": [
+                    {
+                      "key": "category",
+                      "value": "dairy",
+                      "description": "Type: String\n\nRequired: No\n\nPossible Values: {meat-seafood, fresh-produce, candy, bread-bakery, dairy, eggs, coffee}\n \n",
+                      "disabled": true
+                    },
+                    {
+                      "key": "results",
+                      "value": "20",
+                      "description": "Type: integer\n\nRequired: No\n\nValues: {1 to 20}",
+                      "disabled": true
+                    },
+                    {
+                      "key": "available",
+                      "value": "true",
+                      "description": "Type: Boolean\n\nRequired: No\n\n"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Create a New Cart",
               "event": [
                 {
@@ -1417,6 +1608,51 @@
                   ],
                   "path": [
                     "carts"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get a Cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Test to check if the response status code is 200\r",
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "apikey"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/carts/: cartId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "carts",
+                    ": cartId"
+                  ],
+                  "variable": [
+                    {
+                      "key": " cartId",
+                      "value": "{{cartId}}"
+                    }
                   ]
                 }
               },
@@ -1593,6 +1829,8 @@
                       "    pm.expect(actuallastOrder.id).to.eql(expectedlastOrderId);\r",
                       "\r",
                       "});\r",
+                      "\r",
+                      "\r",
                       ""
                     ],
                     "type": "text/javascript",
@@ -2256,7 +2494,7 @@
                       "});\r",
                       "\r",
                       "pm.test(\"Response should have an error message\", function () {\r",
-                      "    pm.expect(pm.response.json().error).to.string(\"Invalid value for query parameter 'available'\");\r",
+                      "    pm.expect(pm.response.json().error).to.include(\"Invalid value for query parameter 'available'\");\r",
                       "});\r",
                       ""
                     ],
@@ -4092,7 +4330,54 @@
         "packages": {},
         "requests": {},
         "exec": [
-          ""
+          "{\r",
+          "    // Optimization: Only run once per collection execution\r",
+          "    // use a local variable (collectionVariable) that will be cleared at the start.\r",
+          "    if (pm.collectionVariables.get(\"isSystemChecked\") == false) {\r",
+          "        console.log(\"pre collection\");\r",
+          "        const baseUrl = pm.environment.get(\"baseUrl\"); \r",
+          "\r",
+          "        const healthCheckRequest = {\r",
+          "            url: `${baseUrl}/status`, \r",
+          "            method: 'GET', \r",
+          "            header: {\r",
+          "                'Accept': 'application/json',\r",
+          "                'Content-Type': 'application/json'\r",
+          "            }\r",
+          "        };\r",
+          "\r",
+          "        pm.sendRequest(healthCheckRequest, (err, res) => {\r",
+          "            \r",
+          "            if (err) {\r",
+          "                console.error(\"CRITICAL: Connection Error during Health Check\", err);\r",
+          "                return stopSuite(\"Network Failure\");\r",
+          "            }\r",
+          "\r",
+          "            // Verify status code and system state\r",
+          "            const isHealthy = res.code === 200 && res.json().status === \"UP\"; \r",
+          "\r",
+          "            if (!isHealthy) {\r",
+          "                return stopSuite(`System Unhealthy (Status: ${res.code})`); \r",
+          "            }\r",
+          "\r",
+          "            console.log(\"Health Check PASSED: System is UP. Flagging as checked.\"); \r",
+          "            \r",
+          "            // 2. Set the flag so subsequent requests skip this block\r",
+          "            pm.collectionVariables.set(\"isSystemChecked\", true);\r",
+          "        });\r",
+          "    }\r",
+          "\r",
+          "    /**\r",
+          "     * Helper function to abort the test run cleanly\r",
+          "     */\r",
+          "    function stopSuite(reason) {\r",
+          "        console.error(`ABORTING RUN: ${reason}`);\r",
+          "        pm.execution.setNextRequest(null); \r",
+          "        pm.test(\"Execution Guard: System must be healthy\", () => {\r",
+          "            pm.expect.fail(reason);\r",
+          "        });\r",
+          "    }\r",
+          "}"
         ]
       }
     },
@@ -4106,84 +4391,6 @@
           ""
         ]
       }
-    }
-  ],
-  "variable": [
-    {
-      "key": "cartId",
-      "value": "SivSd_tanR5FX7le6w_Lr"
-    },
-    {
-      "key": "orderId",
-      "value": "SIi0AK8g5xSPUbRK2YGKY"
-    },
-    {
-      "key": "resultsLimit",
-      "value": 8
-    },
-    {
-      "key": "category",
-      "value": "candy"
-    },
-    {
-      "key": "productId",
-      "value": 4641
-    },
-    {
-      "key": "productName",
-      "value": "Don Francisco Colombia Supremo Medium Roast"
-    },
-    {
-      "key": "productCategory",
-      "value": "coffee"
-    },
-    {
-      "key": "lastAddedItemId",
-      "value": 365870957
-    },
-    {
-      "key": "productInStock",
-      "value": true
-    },
-    {
-      "key": "clientName",
-      "value": "Ruben Dickinson Jr."
-    },
-    {
-      "key": "customerName",
-      "value": "Pauline Sanford"
-    },
-    {
-      "key": "productQuantity",
-      "value": 2
-    },
-    {
-      "key": "productIdx",
-      "value": 7
-    },
-    {
-      "key": "NewProductId",
-      "value": 5774
-    },
-    {
-      "key": "NewProductQuantity",
-      "value": 1
-    },
-    {
-      "key": "InvalidProductId",
-      "value": 1000
-    },
-    {
-      "key": "overStockQty",
-      "value": 51
-    },
-    {
-      "key": "access_token",
-      "value": "ccb809961cd9ecceb36ecb6a8114d1b9b51b01ec20602a2453ff5a2c19775d91"
-    },
-    {
-      "key": "orderComment",
-      "value": "Order updated on 4/14/2026, 12:14:17 PM"
     }
   ]
 }
