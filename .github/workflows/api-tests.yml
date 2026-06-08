@@ -1,0 +1,48 @@
+name: API Test Automation Suite
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Newman & Reporters
+        run: |
+          npm install -g newman newman-reporter-htmlextra newman-reporter-junit
+
+      - name: Make Script Executable
+        run: chmod +x run_api.sh
+
+      - name: Execute API Testing Framework
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          POSTMAN_COLLECTION_ID: ${{ secrets.POSTMAN_COLLECTION_ID }}
+          POSTMAN_ENV_ID: ${{ secrets.POSTMAN_ENV_ID }}
+        run: ./run_api.sh
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v4
+        if: always() # Upload reports regardless of success/failure
+        with:
+          name: api-test-reports
+          path: reports/
+          retention-days: 7

@@ -1,11 +1,15 @@
 #!/bin/bash
 
-# 1. Load variables from .env file
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs -d '\n')
-else
-    echo "ERROR: .env file not found. Please create one based on .env.example"
-    exit 1
+# 1. Load variables from .env file if not already defined in the environment
+if [ -z "$POSTMAN_API_KEY" ] || [ -z "$POSTMAN_COLLECTION_ID" ] || [ -z "$POSTMAN_ENV_ID" ]; then
+    if [ -f .env ]; then
+        echo "Loading variables from .env file..."
+        export $(grep -v '^#' .env | xargs -d '\n')
+    else
+        echo "ERROR: Environment variables POSTMAN_API_KEY, POSTMAN_COLLECTION_ID, and POSTMAN_ENV_ID are not set, and no .env file was found."
+        echo "Please create a .env file or set these variables in your environment."
+        exit 1
+    fi
 fi
 
 # 2. Configuration

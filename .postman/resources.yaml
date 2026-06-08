@@ -1,0 +1,9 @@
+# Use this workspace to collaborate
+workspace:
+  id: 8bd507ca-2d24-458a-8c1c-2e98d27dcbbb
+
+localResources:
+  collections:
+    - ..\Simple Grocery Store.postman_collection.json
+  environments:
+    - ..\Simple Grocery Env.postman_environment.json
