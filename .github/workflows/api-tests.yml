@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Newman & Reporters
         run: |
-          npm install -g newman newman-reporter-htmlextra newman-reporter-junit
+          npm install -g newman newman-reporter-htmlextra
 
       - name: Make Script Executable
         run: chmod +x run_api.sh

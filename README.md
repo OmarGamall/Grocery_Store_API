@@ -80,7 +80,7 @@ Ensure you have the following installed on your machine:
 
 Install dependencies globally:
 ```bash
-npm install -g newman newman-reporter-htmlextra newman-reporter-junit
+npm install -g newman newman-reporter-htmlextra
 ```
 
 ### 2. Configuration
