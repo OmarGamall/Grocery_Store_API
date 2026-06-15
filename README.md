@@ -19,13 +19,20 @@ To mimic authentic user workflows, the framework dynamically extracts response p
 * **Token Extraction:** Automatically registers an API client, parses the bearer token, and sets it to the Postman environment variables for authorization headers.
 * **Lifecycle Flow:** Seamlessly propagates `cartId` and `orderId` throughout the cart modifications, ordering, and deletion lifecycle.
 
-### 2. Advanced Test Assertions & Validations
+### 2. Pre-Request Scripts & Test Case Independence
+To prevent test suite fragility and avoid side effects between test runs, the framework utilizes Postman **Pre-request Scripts** to resolve test data dynamically before requests are dispatched:
+* **Live Catalog & Stock Lookups:** Requests like *Add Item to Cart* and *Replace Item* perform out-of-band requests (`pm.sendRequest`) to `/products?available=true`. They retrieve the live catalog, filter for active, in-stock products, and dynamically store the selected product's ID. This prevents test failures due to hardcoded, static product IDs that might be deleted or out of stock.
+* **Adaptive Stock Boundaries:** The *Modify Item* pre-request script queries the product's details directly (`/products/:id`) to extract its exact `current-stock` limits, dynamically generating a valid random quantity within those bounds (between `1` and `current-stock`) to ensure successful modifications.
+* **Dynamic Data Mocking:** Dynamically resolves dynamic variables (like `{{$randomFullName}}`) and stamps current timestamps into variables (`orderComment`) prior to execution to avoid collision and ensure idempotency checks.
+* **Dynamic Category Selection (DDT):** Dynamically picks a category from a predefined pool of category options (e.g. `meat-seafood`, `fresh-produce`, etc.) during data-driven loop tests to ensure consistent, diverse coverage without manual intervention.
+
+### 3. Advanced Test Assertions & Validations
 The test suite utilizes the Postman Sandbox (ES6 JavaScript) to enforce strict validation rules:
 * **Response Schema Verification:** Employs JSON Schema Validation to guarantee the structure of responses matches contract definitions.
 * **Performance SLA Audits:** Asserts that API response latency is within acceptable thresholds (e.g., `< 200ms`).
 * **Header & Type Audits:** Verifies content-types, status codes, and structural types (e.g., checking that returned product quantities are integers).
 
-### 3. Edge-Case, Negative & Security Testing
+### 4. Edge-Case, Negative & Security Testing
 * **Oversell Protection:** Validates that the inventory API correctly rejects requests that attempt to add items beyond the available stock limit.
 * **State Rollback Verification:** Confirms that if an over-stock operation fails, the system rolls back to the previous stable state (e.g., verifying a cart remains empty after a failed addition).
 * **Idempotency Audits:** Verifies that submitting duplicate orders results in appropriate error states or is handled gracefully by the backend.
